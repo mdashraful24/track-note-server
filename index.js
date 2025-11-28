@@ -27,7 +27,7 @@ async function run() {
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
-    
+
     const userCollection = client.db("taskManagementDB").collection("users");
     const taskCollection = client.db("taskManagementDB").collection("tasks");
 
@@ -114,6 +114,31 @@ async function run() {
       }
     });
 
+    // update a task
+    app.put("/updateTask/:id", async (req, res) => {
+      try {
+        const { id } = req.params;
+        const { title, description, category } = req.body;
+
+        if (!title || !description || !category) {
+          return res.status(400).json({ message: "All fields are required" });
+        }
+
+        const result = await taskCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { title, description, category } }
+        );
+
+        if (result.modifiedCount > 0) {
+          res.status(200).json({ message: "Task updated successfully" });
+        } else {
+          res.status(404).json({ message: "Task not found" });
+        }
+      } catch (error) {
+        console.error("Error updating task:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+      }
+    });
 
     // getting
     app.get("/getTasks", async (req, res) => {
