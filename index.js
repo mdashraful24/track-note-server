@@ -172,7 +172,7 @@ async function run() {
 run().catch(console.dir);
 
 app.get("/", async (req, res) => {
-  res.send("hello world");
+  res.send("track note running");
 });
 
 app.listen(port, () => {
