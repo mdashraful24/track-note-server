@@ -4,8 +4,29 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5000;
 
-// middleware
-app.use(cors());
+// Middleware
+app.use((req, res, next) => {
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+  res.setHeader("Cross-Origin-Embedder-Policy", "credentialless");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  next();
+});
+
+// 2. Configure CORS with specific origins
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'https://track-notes-a64a7.web.app',
+    'https://track-note-ecru.vercel.app',
+    /\.vercel\.app$/
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept']
+}));
+
+app.options('*', cors());
 app.use(express.json());
 
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
